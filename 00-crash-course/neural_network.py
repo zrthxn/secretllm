@@ -3,6 +3,66 @@ import math
 import numpy as np
 
 class Value:
+    """
+    A class to represent a value in a computational graph, supporting basic arithmetic operations and automatic differentiation.
+    Attributes:
+    -----------
+    data : float
+        The numerical value.
+    grad : float
+        The gradient of the value.
+    _prev : set
+        The set of parent nodes in the computational graph.
+    _op : str
+        The operation that produced this value.
+    label : str
+        An optional label for the value.
+    _backward : function
+        The function to compute the gradient of this value.
+    Methods:
+    --------
+    __init__(data, _children=(), _op='', label=''):
+        Initializes the Value object with data, children, operation, and label.
+    _backward_placeholder():
+        A placeholder backward function.
+    __repr__():
+        Returns a string representation of the Value object.
+    __add__(other):
+        Adds two Value objects or a Value object and a number.
+    __radd__(other):
+        Adds a number and a Value object.
+    __neg__():
+        Negates the Value object.
+    __sub__(other):
+        Subtracts a Value object or a number from the Value object.
+    __rsub__(other):
+        Subtracts the Value object from a number.
+    __mul__(other):
+        Multiplies two Value objects or a Value object and a number.
+    __rmul__(other):
+        Multiplies a number and a Value object.
+    __truediv__(other):
+        Divides the Value object by another Value object or a number.
+    __rtruediv__(other):
+        Divides a number by the Value object.
+    __pow__(other):
+        Raises the Value object to the power of an integer or float.
+    exp():
+        Computes the exponential of the Value object.
+    relu():
+        Applies the ReLU activation function to the Value object.
+    tanh():
+        Applies the tanh activation function to the Value object.
+    log():
+        Computes the natural logarithm of the Value object.
+    __getstate__():
+        Prepares the Value object for pickling.
+    __setstate__(state):
+        Restores the Value object from a pickled state.
+    backward():
+        Computes the gradients of all values in the computational graph using backpropagation.
+    """
+
     def __init__(self, data, _children=(), _op='', label=''):
         self.data = data
         self.grad = 0
@@ -118,6 +178,24 @@ class Value:
             node._backward()
 
 class Neuron:
+    """
+    A class representing a single artificial neuron.
+    Attributes:
+    -----------
+    w : list of Value
+        Weights associated with the neuron's inputs.
+    b : Value
+        Bias term for the neuron.
+    Methods:
+    --------
+    __init__(nin):
+        Initializes the neuron with random weights and bias.
+    __call__(x):
+        Computes the output of the neuron for a given input `x` using a ReLU activation function.
+    parameters():
+        Returns the list of parameters (weights and bias) of the neuron.
+    """
+
     def __init__(self, nin):
         self.w = [Value(np.random.randn()) for _ in range(nin)]
         self.b = Value(np.random.randn())
@@ -130,6 +208,19 @@ class Neuron:
         return self.w + [self.b]
 
 class Layer:
+    """
+    Represents a layer in a neural network, consisting of multiple neurons.
+    Attributes:
+        neurons (list): A list of Neuron objects in the layer.
+    Methods:
+        __init__(nin, nout):
+            Initializes the Layer with a specified number of input and output neurons.
+        __call__(x):
+            Applies the layer to an input x, returning the output of each neuron in the layer.
+        parameters():
+            Returns a list of all parameters from all neurons in the layer.
+    """
+
     def __init__(self, nin, nout):
         self.neurons = [Neuron(nin) for _ in range(nout)]
     
@@ -140,6 +231,19 @@ class Layer:
         return [p for n in self.neurons for p in n.parameters()]
 
 class MLP:
+    """
+    Multi-Layer Perceptron (MLP) class for constructing and managing a neural network.
+    Attributes:
+        layers (list): A list of Layer objects representing the layers of the neural network.
+    Methods:
+        __init__(nin, nouts):
+            Initializes the MLP with the given input size and list of output sizes for each layer.
+        __call__(x):
+            Passes the input through the network, layer by layer, and returns the output.
+        parameters():
+            Returns a list of all parameters in the network.
+    """
+
     def __init__(self, nin, nouts):
         sz = [nin] + nouts
         self.layers = [Layer(sz[i], sz[i+1]) for i in range(len(sz)-1)]
