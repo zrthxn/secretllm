@@ -1,0 +1,13 @@
+# Calculations and visualizations
+numpy
+pandas
+matplotlib
+# Machine learning packages
+scikit-learn
+torch
+sklearn
+# Tokenization libraries
+nltk
+spacy
+sentencepiece
+tokenizers
