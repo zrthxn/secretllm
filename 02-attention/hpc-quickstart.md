@@ -1,6 +1,6 @@
-### HPC Quickstart
+# HPC Quickstart
 
-# Introduction
+## Introduction
 In order to work with neural networks and large datasets, we need compute resources. Using GPUs instead of CPUs can significantly reduce computation time for many exercises. That is why, we are going to connect to the university HPC.
 Easiest way in our case to access HPC GPU nodes is through the HPC Jupyterhub. However, these systems have limited capacity. To manage this:
 - please form groups of 2-3 students during exercises. (Note: individual access may be easier when working from home.)
@@ -9,21 +9,21 @@ Easiest way in our case to access HPC GPU nodes is through the HPC Jupyterhub. H
 
 Please be aware that the number of GPUs are limited and we are a large course. If the HPC does not accept more requests, team up with a fellow student to solve the tasks together!
 
-# Connect
+## Connect
 - Go to https://jupyterhub.hpc.tu-dresden.de/ (use the university VPN, if you are at home).
 
-# Login
+## Login
 - At login page please use your ZIH credentials (without @tu-dresden.de).
 
 <img src="https://compendium.hpc.tu-dresden.de/access/misc/jupyterhub_loginpage_marie.png">
 
-# Start a session
+## Start a session
 - Before you start a session, click on *Advanced* and change the properties:
 ![alt text](https://github.com/zrthxn/secretllm/blob/ex_attention/02-attention/Server_properties.png)
 
 - Click on *Start*.
 
-# Working on your notebook
+## Working on your notebook
 - In JupyterHub, you can create scripts in notebooks. 
 - Upload the code to your home folder (either use the GUI of Jupyter or use scp).
 - Start coding!
