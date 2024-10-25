@@ -10,7 +10,7 @@ Easiest way in our case to access HPC GPU nodes is through the HPC Jupyterhub. H
 Please be aware that the number of GPUs are limited and we are a large course. If the HPC does not accept more requests, team up with a fellow student to solve the tasks together!
 
 ## Connect
-- Go to https://jupyterhub.hpc.tu-dresden.de/ (use the university VPN, if you are at home).
+Go to https://jupyterhub.hpc.tu-dresden.de/ (use the university VPN, if you are at home).
 
 ## Login
 - At login page please use your ZIH credentials (without @tu-dresden.de).
@@ -18,8 +18,9 @@ Please be aware that the number of GPUs are limited and we are a large course. I
 <img src="https://compendium.hpc.tu-dresden.de/access/misc/jupyterhub_loginpage_marie.png">
 
 ## Start a session
-- Before you start a session, click on *Advanced* and change the properties:
-![alt text](https://github.com/zrthxn/secretllm/blob/ex_attention/02-attention/Server_properties.png)
+- Before you start a session, click on *Advanced* and change the properties
+
+![alt text](./img/server-properties.png)
 
 - Click on *Start*.
 
