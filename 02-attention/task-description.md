@@ -6,7 +6,8 @@
 ### Exercise 2
 # Attention for Timeseries Prediction
 
-This time we will learn how to implement attention and how it can improve prediction of time-series data.
+This time we will learn prediction of time-series data and we will show you 
+how to implement attention and how it can be used for this application.
 
 - [Attention for Timeseries Prediction](#attention-for-timeseries-prediction)
   - [HPC Quickstart](#hpc-quickstart)
@@ -21,7 +22,8 @@ This time we will learn how to implement attention and how it can improve predic
 ## HPC Quickstart
 
 We assume you have signed up on the HPC with the link/QR-code provided.
-Read the HPC Quickstart guide that we have prepared and ensure that you are able to login to jupyterhub.hpc.tu-dresden.de 
+Read the [HPC Quickstart guide](https://doc.zih.tu-dresden.de/access/jupyterhub/) 
+and ensure that you are able to login to jupyterhub.hpc.tu-dresden.de 
 with your ZIH login credentials, as well as login via `ssh`.
 
 ```bash
