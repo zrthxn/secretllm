@@ -4,11 +4,11 @@
 <p>Exercise 2</p> -->
 
 ### Exercise 2
-# Attention for time-series Prediction
+# Attention for Timeseries Prediction
 
 This time we will learn how to implement attention and how it can improve prediction of time-series data.
 
-- [Attention for time-series Prediction](#attention-for-time-series-prediction)
+- [Attention for Timeseries Prediction](#attention-for-timeseries-prediction)
   - [HPC Quickstart](#hpc-quickstart)
     - [Task 0: Run a Notebook on HPC](#task-0-run-a-notebook-on-hpc)
   - [PANJAPAN Dataset](#panjapan-dataset)
@@ -16,7 +16,7 @@ This time we will learn how to implement attention and how it can improve predic
   - [Build and Train an RNN](#build-and-train-an-rnn)
     - [Task 2: Write a simple LSTM model](#task-2-write-a-simple-lstm-model)
     - [Task 3: Train your LSTM model](#task-3-train-your-lstm-model)
-    - [Task 4: Plot results on test split](#task-4-plot-results-on-test-split)
+    - [Task 4: Inference and Plot Results](#task-4-inference-and-plot-results)
 
 ## HPC Quickstart
 
@@ -29,53 +29,80 @@ ssh login2.alpha.hpc.tu-dresden.de -l <ZIH-Login>
 ```
 
 Your personal data like code, notebooks, plots, datasets you downloaded etc. should be kept in your home directory `/home/<ZIH-Login>`.
-The project directory is available for project data that you want to share with other project members `/projects/p_scads_llm_secrets`.
+The project directory is available for project data that you want to share with other project members `/projects/p_scads_llm_secrets`. Note that this is a read-only directory.
 
 > **Note: Login to the HPC is only possible on the university netowork or via the VPN!**
 
 ### Task 0: Run a Notebook on HPC
-Read this using pandas and pre-process it to be ready for training.
+Once you are able to create a Jupyter instance on the HPC, use the 
+[notebook from Exercise 1](https://bildungsportal.sachsen.de/opal/auth/RepositoryEntry/46076788747/CourseNode/1728959390807630005)
+on the basics of PyTorch and building neural networks to validate that everything works.
+1. Upload the notebook to your home directory via the JupyterHub web interface.
+2. Select the "PyTorch 2.0" environment for the notebook. 
+3. Run the whole notebook and check that everything works.
 
 ## PANJAPAN Dataset
 We will use a time-series dataset called PANJAPAN.
-You can download the dataset from Huggingface: LINK.
-The dataset is already available on the HPC under `/projects/p_scads_llm_secrets/datasets/PANJAPAN`
+You can clone the [dataset from Huggingface](https://huggingface.co/datasets/zrthxn/PANJAPAN) with `git clone git@hf.co:datasets/zrthxn/PANJAPAN`
 
-The dataset contains many samples of time-series like these in CSV files. Each file has a value column
-and a timestamp column. Many of the timeseries here have seasonalities which we should
-be able to predict with our neural netowork.
+On the HPC, the dataset is already available under `/projects/p_scads_llm_secrets/datasets/PANJAPAN`
 
-Here is what the dataset looks like. 
-<img src="./img/panjapan-sample.png">
+The dataset contains many samples of time-series like these in CSV files. Each file has a 
+value column and a timestamp column. Many of the time-series here have seasonalities which 
+we should be able to predict with our neural netowork.
+
+Here is what these look like
+<img width="90%" src="./img/panjapan-sample.png">
 
 ### Task 1: Read and Prepare the Dataset
-Read this using pandas and pre-process it to be ready for training.
+The easiest way to read the dataset is with `pandas.read_csv`, and later convert each
+time-series to numpy arrays. To do this, you can use the following snippet.
 
 ```py
-def read_data():
-  ...
+import numpy as np
+import pandas as pd
+
+timeseries = []
+
+DATAPATH = "/projects/p_scads_llm_secrets/datasets/PANJAPAN/benchmarking"
+for path in os.listdir(DATAPATH):
+  # Filter out only CSVs and use only those with 840 points
+  if path.endswith(".csv") and \
+      (df := pd.read_csv(DATAPATH / path).to_numpy()).shape == (840, 2):
+    timeseries.append(df)
+
+timeseries = np.array(timeseries)
 ```
 
+Since each time-series can be of a variable size, here we are also filtering out only CSVs 
+and we are use only those time-series with 840 points for ease of code later.
+We have provided a notebook with some starter code to preprocess the dataset until a point
+that you can start using it to train a neural network.
+
 ## Build and Train an RNN
-
-Sequence-to-Sequence or Seq2Seq models are a machine learning architecture designed for tasks 
-involving sequential data, like time-series forecasting or language translation. 
-**We take an input sequence, processes it, and generate an output sequence.**
-
-Recurrent Neural Networks are a common architecture to transform sequences. Vanilla RNNs suffer from the problem of 
-vanishing gradient, where the gradient of loss becomes too small over many time steps to be useful for training. 
+Recurrent Neural Networks are a common architecture to transform sequences. Vanilla RNNs 
+suffer from the problem of vanishing gradient, where the gradient of loss becomes too 
+small over many time steps to be useful for training. 
 Thus these are rarely used, in favour of LSTM or GRU which are more common.
 
 ### Task 2: Write a simple LSTM model
-Using PyTorch, write a very simple LSTM model that takes in a sequence of values and returns another sequence.
-Use the reference of...
+Using PyTorch, write a very simple LSTM model that takes in a sequence of values and returns another sequence. The input sequence of values is called "backcast" or "horizon",
+and the output sequence of values is the forecast.
+
+```
+    |<--------backcast-------->|<--forecast-->|
+... * * * * * * * * * * * * * * # # # # # # # # ... values
+```
+
+Use the LSTM layer and a linear layer from `torch.nn` in your model with a configurable
+output size. The `input_size` parameter of the LSTM layer will always be 1 since we are 
+using scalar time-series values, i.e. with only 1 dimension.
 
 ```py
 from torch import nn
 
-# Here we will define our neural network as a class
 class LSTM(nn.Module):
-  def __init__(self, input_size, output_size):
+  def __init__(self, output_size):
     super().__init__()
     
     # TODO: Use the LSTM layer and a linear layer from torch.nn
@@ -86,31 +113,52 @@ class LSTM(nn.Module):
 
     return prediction
 
-rnn = LSTM(input_size = ..., output_size = ...)
+rnn = LSTM(output_size = ...)
 ```
+Read the [PyTorch LSTM documentation][torch.nn.lstm] to learn how to use this layer.
 
 ### Task 3: Train your LSTM model
-We will now and a training loop for the dataset
+Now write a training loop that will iterate over the training time-seris, create 
+sliding windowed views from the time-series and use these as training samples.
+
+Each window will have the size `[BACKCAST_SIZE + FORECAST_SIZE]`.
+For details, refer to the preprocessing notebook provided.
 
 ```py
 from torch.optim import Adam
 
-optimizer = Adam(params=rnn.parameters(), lr=5e-3)
+rnn_model = LSTM(out_size = FORECAST_SIZE)
+optimizer = Adam(params=rnn.parameters(), lr=2e-3)
 
-for epoch in range(EPOCHS):
+for epoch in range(EPOCHS := 5):
+  dataset = []
+  for series in train_dataset:
+    dataset.extend(create_windows(series))
+
+  train_dataloader = DataLoader(dataset, shuffle=True, batch_size=24)
   for i, batch in tqdm(enumerate(train_dataloader), desc=f"Epoch {epoch}/{EPOCHS}"):
     optimizer.zero_grad()
     # TODO: Complete the training loop
     ...
 ```
+Refer to this [LSTM tutorial][lstm-tutorial] for help on how to implement a training loop.
+In the end you should be able to train this model and observe a decrease in the loss of the
+model as you train it. We recommend that you plot your loss values with `matplotlib`.
 
-### Task 4: Plot results on test split
+### Task 4: Inference and Plot Results
+Finally, once you have been able to train this model, you should now be able to validate
+its results using the test split. Iterate over the `test_dataset` and create sliding
+windows similar to how you did so for training time-series.
 
-
+Using these you can get predictions for the whole time-series. Plot these along with the
+true value of the time-series and see how they compare. 
+- Are the predictions close to the test time-series? Where does this model fail? 
+- Is the model performing better on some time-series than others?
+- What happens when you use the model's own predictions to make the next prediction?
 
 
 <!-- links -->
-[torch.nn.lstm][https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html]
-[tutorial-rnns][https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html]
-[recurrent-layers][https://pytorch.org/tutorials/beginner/introyt/modelsyt_tutorial.html#recurrent-layers]
-[lstm-tutorial][https://machinelearningmastery.com/lstm-for-time-series-prediction-in-pytorch/]
+[torch.nn.lstm]: https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html
+[tutorial-rnns]: https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
+[recurrent-layers]: https://pytorch.org/tutorials/beginner/introyt/modelsyt_tutorial.html#recurrent-layers
+[lstm-tutorial]: https://machinelearningmastery.com/lstm-for-time-series-prediction-in-pytorch/
