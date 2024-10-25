@@ -33,7 +33,7 @@ ssh login2.alpha.hpc.tu-dresden.de -l <ZIH-Login>
 Your personal data like code, notebooks, plots, datasets you downloaded etc. should be kept in your home directory `/home/<ZIH-Login>`.
 The project directory is available for project data that you want to share with other project members `/projects/p_scads_llm_secrets`. Note that this is a read-only directory.
 
-> **Note: Login to the HPC is only possible on the university netowork or via the VPN!**
+> **Note: Login to the HPC is only possible on the university network or via the [VPN][vpn]**
 
 ### Task 0: Run a Notebook on HPC
 Once you are able to create a Jupyter instance on the HPC, use the 
@@ -156,10 +156,12 @@ Using these you can get predictions for the whole time-series. Plot these along 
 true value of the time-series and see how they compare. 
 - Are the predictions close to the test time-series? Where does this model fail? 
 - Is the model performing better on some time-series than others?
+- What happens when you increase the size of forecast?
 - What happens when you use the model's own predictions to make the next prediction?
 
 
 <!-- links -->
+[vpn]: https://tu-dresden.de/zih/dienste/service-katalog/arbeitsumgebung/zugang_datennetz/vpn
 [torch.nn.lstm]: https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html
 [tutorial-rnns]: https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
 [recurrent-layers]: https://pytorch.org/tutorials/beginner/introyt/modelsyt_tutorial.html#recurrent-layers
