@@ -12,7 +12,7 @@ from transformers.data.data_collator import DataCollatorForLanguageModeling
 parser = ArgumentParser()
 parser.add_argument("--output_directory", type=str)
 parser.add_argument("--language", type=str)
-args = parser.parse_known_args(argv[1:])
+args, = parser.parse_known_args(argv[1:])
 
 DIRECTORY = args.output_directory
 LANG = args.language
