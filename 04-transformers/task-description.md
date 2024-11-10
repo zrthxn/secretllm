@@ -21,8 +21,8 @@ For this task we recommend that you try to find a dataset in your language or a 
    for how to load the dataset. This may be different for different datasets. 
 
 <div style="display: flex;">
-    <img width="55%" src="img/dataset-type.png">
-    <img width="45%" src="img/dataset-languages.png">
+    <img width="55%" src="images/dataset-type.png">
+    <img width="45%" src="images/dataset-languages.png">
 </div>
 
 Of course you can choose a dataset according to what you want to build.
