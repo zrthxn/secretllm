@@ -1,0 +1,6 @@
+pytorch
+datasets
+tokenizers
+transformers[torch]
+transformers[sentencepiece]
+matplotlib
