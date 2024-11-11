@@ -14,12 +14,13 @@ parser.add_argument("--output_directory", type=str)
 parser.add_argument("--language", type=str)
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size", type=int, default=64)
+parser.add_argument("--cache_dir", type=str, default=".")
 args, _ = parser.parse_known_args(argv[1:])
 
 DIRECTORY = args.output_directory
 LANG = args.language
 
-dataset = load_dataset("wikimedia/wikipedia", f"20231101.{LANG}", cache_dir=f"{DIRECTORY}/data")
+dataset = load_dataset("wikimedia/wikipedia", f"20231101.{LANG}", cache_dir=args.cache_dir)
 dataset = [ data["text"] for data in dataset["train"] ]
 
 # Initialize a tokenizer
