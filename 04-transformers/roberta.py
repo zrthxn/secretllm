@@ -54,6 +54,7 @@ model = RobertaForCausalLM(
         num_attention_heads=12,
         num_hidden_layers=6,
         type_vocab_size=1,
+        is_decoder=True
     ))
 
 
@@ -65,9 +66,7 @@ training_args = TrainingArguments(
     overwrite_output_dir=True,
     num_train_epochs=args.epochs,
     per_device_train_batch_size=args.batch_size,
-    save_steps=10_000,
-    save_total_limit=2,
-    prediction_loss_only=True
+    save_steps=10_000
 )
 
 trainer = Trainer(
