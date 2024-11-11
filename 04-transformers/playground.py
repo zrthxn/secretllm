@@ -3,7 +3,7 @@ import streamlit as st
 
 from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
-from transformers import pipelinew
+from transformers import pipeline
 
 
 # The directory where you have the models saved. Each model is saved to its own directory
