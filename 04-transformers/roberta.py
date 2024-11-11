@@ -44,9 +44,9 @@ tokenizer.enable_truncation(max_length=512)
 tokenizer._tokenizer.post_processor = BertProcessing(
     ("</s>", tokenizer.token_to_id("</s>")),
     ("<s>", tokenizer.token_to_id("<s>")))
-tokenizer.save_model(f"{DIRECTORY}/{LANG}-tokenizer")
+tokenizer.save_model(f"{DIRECTORY}/{LANG}-roberta/tokenizer")
 
-tokenizer = RobertaTokenizerFast.from_pretrained(f"{DIRECTORY}/{LANG}-tokenizer", max_len=512)
+tokenizer = RobertaTokenizerFast.from_pretrained(f"{DIRECTORY}/{LANG}-roberta/tokenizer", max_len=512)
 
 model = RobertaForCausalLM(
     RobertaConfig(

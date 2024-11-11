@@ -1,26 +1,46 @@
+import os
+import streamlit as st
+
 from pathlib import Path
-from transformers import RobertaForCausalLM, RobertaTokenizerFast, RobertaConfig
-from transformers import DataCollatorForLanguageModeling, DataCollatorForSeq2Seq
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 from transformers import pipeline
 
 
-PWD = Path(".").absolute()
+DIRS = Path(".").absolute() / ".checkpoints"
 LANG = "hi"
+DEVICE = "mps"
 
-tokenizer = RobertaTokenizerFast.from_pretrained(f"{PWD}/.checkpoints/{LANG}-tokenizer")
-model = RobertaForCausalLM.from_pretrained(f"{PWD}/.checkpoints/{LANG}-roberta",
-    config=RobertaConfig.from_pretrained(f"{PWD}/.checkpoints/{LANG}-roberta"))
+available_models = {}
+for name in os.listdir(DIRS):
+    if (DIRS / name).is_dir() and "model.safetensors" in os.listdir(DIRS / name):
+        available_models[name] = {
+            "path": DIRS / name
+        }
 
-data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
-# data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
+default = list(available_models.keys())[0]
 
+tokenizer = AutoTokenizer.from_pretrained(available_models[default]["path"] / "tokenizer")
+model = AutoModelForCausalLM.from_pretrained(available_models[default]["path"],
+    config=AutoConfig.from_pretrained(available_models[default]["path"]))
 
-sentence = "आराधना करने वाले को भक्त "
-batch = data_collator(tokenizer(sentence, return_tensors="pt").input_ids)
-print(batch["input_ids"])
-print(batch["labels"])
+def run_completion(prompt: str, max_new_tokens: int = 100) -> str:
+    generate = pipeline("text-generation", model=model, tokenizer=tokenizer, device=DEVICE)
+    output = generate(prompt, max_new_tokens = max_new_tokens)
+    return output[0]["generated_text"]
 
-# generate = pipeline("text-generation", model=model, tokenizer=tokenizer, device="mps")
-# output = generate(sentence, max_new_tokens = 500)
+"""
+# Playground
+"""
 
-# print(output)
+prompt_col, model_col = st.columns((9, 3))
+with prompt_col:
+    prompt = st.text_input("Prompt", placeholder="Write a prompt in the model's language", key="prompt")
+    output = run_completion(prompt)
+with model_col:
+    model_name = st.selectbox("Model", options=available_models.keys(), index=0)
+        
+    tokenizer = AutoTokenizer.from_pretrained(available_models[model_name]["path"] / "tokenizer")
+    model = AutoModelForCausalLM.from_pretrained(available_models[model_name]["path"],
+        config=AutoConfig.from_pretrained(available_models[model_name]["path"]))
+
+st.text_area("Generated", placeholder="Generated text comes here", height=300, value=output)
