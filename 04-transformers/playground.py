@@ -3,13 +3,17 @@ import streamlit as st
 
 from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
-from transformers import pipeline
+from transformers import pipelinew
 
 
+# The directory where you have the models saved. Each model is saved to its own directory
+# inside this parent directory. This script will automatically discover the models you have.
 DIRS = Path(".").absolute() / ".checkpoints"
-LANG = "hi"
+
+# The hardware device you want to use. Use "cuda" if you have an NVIDIA GPU. Use "mps" if you're on an M series Mac.
 DEVICE = "mps"
 
+# Automatic discovery of models
 available_models = {}
 for name in os.listdir(DIRS):
     if (DIRS / name).is_dir() and "model.safetensors" in os.listdir(DIRS / name):
