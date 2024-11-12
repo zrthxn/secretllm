@@ -54,7 +54,7 @@ value column and a timestamp column. Many of the time-series here have seasonali
 we should be able to predict with our neural netowork.
 
 Here is what these look like
-<img width="90%" src="./img/panjapan-sample.png">
+<img width="90%" src="images/panjapan-sample.png">
 
 ### Task 1: Read and Prepare the Dataset
 The easiest way to read the dataset is with `pandas.read_csv`, and later convert each

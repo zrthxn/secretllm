@@ -20,7 +20,7 @@ Go to https://jupyterhub.hpc.tu-dresden.de/ (use the university VPN, if you are 
 ## Start a session
 - Before you start a session, click on *Advanced* and change the properties
 
-![alt text](./img/server-properties.png)
+![alt text](images/server-properties.png)
 
 - Click on *Start*.
 
