@@ -63,11 +63,16 @@ train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max
 data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
 training_args = TrainingArguments(
+    learning_rate=1e-3,
+    lr_scheduler_type="cosine",
+    warmup_steps=1_000,
+    weight_decay=0.1,
+    gradient_accumulation_steps=8,
+    per_device_train_batch_size=args.batch_size,
+    num_train_epochs=args.epochs,
     output_dir=f"{DIRECTORY}/{LANG}-roberta",
     overwrite_output_dir=True,
-    num_train_epochs=args.epochs,
-    per_device_train_batch_size=args.batch_size,
-    save_steps=10_000
+    save_steps=10_000,
 )
 
 trainer = Trainer(

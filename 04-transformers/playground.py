@@ -17,20 +17,17 @@ DEVICE = "mps"
 available_models = {}
 for name in os.listdir(DIRS):
     if (DIRS / name).is_dir() and "model.safetensors" in os.listdir(DIRS / name):
-        available_models[name] = {
-            "path": DIRS / name
-        }
+        available_models[name] = DIRS / name
 
-default = list(available_models.keys())[0]
+model_name = list(available_models.keys())[0]
 
-tokenizer = AutoTokenizer.from_pretrained(available_models[default]["path"] / "tokenizer")
-model = AutoModelForCausalLM.from_pretrained(available_models[default]["path"],
-    config=AutoConfig.from_pretrained(available_models[default]["path"]))
+model = AutoModelForCausalLM.from_pretrained(available_models[model_name])
+tokenizer = AutoTokenizer.from_pretrained(available_models[model_name] / "tokenizer")
 
 def run_completion(prompt: str, max_new_tokens: int = 100) -> str:
     generate = pipeline("text-generation", model=model, tokenizer=tokenizer, device=DEVICE)
-    output = generate(prompt, max_new_tokens = max_new_tokens)
-    return output[0]["generated_text"]
+    output = generate(prompt, max_new_tokens = max_new_tokens)[0]
+    return output["generated_text"]
 
 """
 # Playground
@@ -42,9 +39,8 @@ with prompt_col:
     output = run_completion(prompt)
 with model_col:
     model_name = st.selectbox("Model", options=available_models.keys(), index=0)
-        
-    tokenizer = AutoTokenizer.from_pretrained(available_models[model_name]["path"] / "tokenizer")
-    model = AutoModelForCausalLM.from_pretrained(available_models[model_name]["path"],
-        config=AutoConfig.from_pretrained(available_models[model_name]["path"]))
+    
+    model = AutoModelForCausalLM.from_pretrained(available_models[model_name])
+    tokenizer = AutoTokenizer.from_pretrained(available_models[model_name] / "tokenizer")
 
 st.text_area("Generated", placeholder="Generated text comes here", height=300, value=output)

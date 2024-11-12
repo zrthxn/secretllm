@@ -95,7 +95,6 @@ def train(
         learning_rate=5e-4,
         save_steps=5_000,
         fp16=True,
-        push_to_hub=True,
     )
 
     trainer = Trainer(
