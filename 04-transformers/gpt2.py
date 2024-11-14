@@ -40,7 +40,7 @@ def wikipedia(
             return_overflowing_tokens=True,
             return_length=True,
         )} 
-        for sample in dataset
+        for sample in tqdm(dataset, desc="Tokenizing Dataset")
     ]
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
