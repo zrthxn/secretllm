@@ -29,6 +29,7 @@ with model_col:
 
     model = AutoModelForCausalLM.from_pretrained(available_models[model_name])
     tokenizer = AutoTokenizer.from_pretrained(available_models[model_name] / "tokenizer")
+    tokenizer.pad_token_id = tokenizer.eos_token_id
 
 with prompt_col:
     prompt = st.text_input("Prompt", placeholder="Write a prompt in the model's language", key="prompt")

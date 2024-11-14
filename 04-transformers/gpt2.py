@@ -11,7 +11,7 @@ from torch.utils.data.dataloader import DataLoader
 from accelerate import Accelerator
 
 from transformers import get_scheduler
-from transformers import AutoTokenizer, AutoConfig, GPT2LMHeadModel
+from transformers import AutoTokenizer, AutoConfig, GPT2LMHeadModel, GPT2Config
 from transformers import DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments
 from transformers import pipeline
@@ -33,21 +33,12 @@ def wikipedia(
     tokenizer.pad_token = tokenizer.eos_token
     
     train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
-    # train_dataset = [
-    #     tokenizer(
-    #         sample,
-    #         truncation=True,
-    #         max_length=context_length,
-    #         return_overflowing_tokens=True,
-    #         return_length=True,
-    #     ) for sample in tqdm(dataset, desc="Tokenizing Dataset")
-    # ]
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
     model = GPT2LMHeadModel(
         AutoConfig.from_pretrained(
-            "gpt2",
+            "gpt2-large",
             vocab_size=len(tokenizer),
             n_ctx=context_length,
             bos_token_id=tokenizer.bos_token_id,
