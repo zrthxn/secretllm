@@ -34,6 +34,11 @@ with model_col:
 with prompt_col:
     prompt = st.text_input("Prompt", placeholder="Write a prompt in the model's language", key="prompt")
     generate = pipeline("text-generation", model=model, tokenizer=tokenizer, device=DEVICE)
-    output = generate(prompt, max_new_tokens = 250)[0]["generated_text"]
+    output = generate(prompt, max_new_tokens = 100)[0]["generated_text"] if prompt else ""
 
-st.text_area("Generated", placeholder="Generated text comes here", height=300, value=output)
+"**Generated**"
+st.markdown(output or """
+<div style="border: 1px dashed darkgray; padding: 6em; border-radius: 5px; text-align: center; color: darkgray;">
+    Generated text comes here
+</div>
+""", unsafe_allow_html=True)
