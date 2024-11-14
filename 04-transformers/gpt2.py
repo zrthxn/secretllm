@@ -32,16 +32,16 @@ def wikipedia(
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
     
-    tokenized_dataset = [
-        { "input_ids": tokenizer(
-            sample,
-            truncation=True,
-            max_length=context_length,
-            return_overflowing_tokens=True,
-            return_length=True,
-        )} 
-        for sample in tqdm(dataset, desc="Tokenizing Dataset")
-    ]
+    train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
+    # train_dataset = [
+    #     tokenizer(
+    #         sample,
+    #         truncation=True,
+    #         max_length=context_length,
+    #         return_overflowing_tokens=True,
+    #         return_length=True,
+    #     ) for sample in tqdm(dataset, desc="Tokenizing Dataset")
+    # ]
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
@@ -74,7 +74,7 @@ def wikipedia(
         model=model,
         tokenizer=tokenizer,
         data_collator=data_collator,
-        train_dataset=tokenized_dataset)
+        train_dataset=train_dataset)
 
     print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
     trainer.train()
