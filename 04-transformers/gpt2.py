@@ -19,76 +19,37 @@ from transformers import pipeline
 
 @command
 def train(
-    context_length: int = 128,
-    device: str = torch.device("cpu")
-):
+        language: str,
+        output_directory: str,
+        epochs: int = 5,
+        batch_size: int = 32,
+        cache_dir: str = ".",
+        context_length: int = 128):
     
-    split = "train"
-    dataset = load_dataset(f"transformersbook/codeparrot-{split}", split=split, streaming=True)
+    dataset = load_dataset("wikimedia/wikipedia", f"20231101.{language}", cache_dir=cache_dir)
+    dataset = [ data["text"] for data in dataset["train"] ]
     
-    ds_train = load_dataset("huggingface-course/codeparrot-ds-train", split="train")
-    ds_valid = load_dataset("huggingface-course/codeparrot-ds-valid", split="validation")
-
-    raw_datasets = DatasetDict({
-        "train": ds_train,  # .shuffle().select(range(50000)),
-        "valid": ds_valid,  # .shuffle().select(range(500))
-    })
-
-    tokenizer = AutoTokenizer.from_pretrained("huggingface-course/code-search-net-tokenizer")
+    tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
-
-    outputs = tokenizer(
-        raw_datasets["train"][:2]["content"],
-        truncation=True,
-        max_length=context_length,
-        return_overflowing_tokens=True,
-        return_length=True,
-    )
-
-    print(f"Input IDs length: {len(outputs['input_ids'])}")
-    print(f"Input chunk lengths: {(outputs['length'])}")
-    print(f"Chunk mapping: {outputs['overflow_to_sample_mapping']}")
-
-    def tokenize(element):
-        outputs = tokenizer(
-            element["content"],
-            truncation=True,
-            max_length=context_length,
-            return_overflowing_tokens=True,
-            return_length=True)
-        
-        input_batch = []
-        for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
-            if length == context_length:
-                input_batch.append(input_ids)
-        
-        return { "input_ids": input_batch }
-
-
-    tokenized_datasets = raw_datasets.map(tokenize, batched=True, remove_columns=raw_datasets["train"].column_names)
-
-    config = AutoConfig.from_pretrained(
-        "gpt2",
-        vocab_size=len(tokenizer),
-        n_ctx=context_length,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-    )
-
-    model = GPT2LMHeadModel(config)
-    print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
+    model = GPT2LMHeadModel(
+        AutoConfig.from_pretrained(
+            "gpt2",
+            vocab_size=len(tokenizer),
+            n_ctx=context_length,
+            bos_token_id=tokenizer.bos_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            cache_dir=cache_dir
+        ))
+
     args = TrainingArguments(
-        output_dir="codeparrot-ds",
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
-        evaluation_strategy="steps",
-        eval_steps=5_000,
-        logging_steps=5_000,
+        output_dir=f"{output_directory}/{language}-gpt2",
+        per_device_train_batch_size=batch_size,
+        num_train_epochs=epochs,
         gradient_accumulation_steps=8,
-        num_train_epochs=1,
+        logging_steps=5_000,
         weight_decay=0.1,
         warmup_steps=1_000,
         lr_scheduler_type="cosine",
@@ -98,56 +59,28 @@ def train(
     )
 
     trainer = Trainer(
+        args=args,
         model=model,
         tokenizer=tokenizer,
-        args=args,
         data_collator=data_collator,
-        train_dataset=tokenized_datasets["train"],
-        eval_dataset=tokenized_datasets["valid"],
-    )
+        train_dataset=dataset)
 
+    print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
     trainer.train()
+    trainer.save_model(f"{output_directory}/{language}-gpt2")
 
 @command
-def prompt():
-    pipe = pipeline(
-        "text-generation", model="huggingface-course/codeparrot-ds", device=device
-    )
+def prompt(pretrained_model, device: torch.device = torch.device("cuda")):
+    pipe = pipeline("text-generation", model=pretrained_model, device=device)
+    
+    while True:
+        prompt = input(">>> Prompt: ")
+        print(pipe(prompt, num_return_sequences=1)[0]["generated_text"], "\n")
+    
 
-    txt = """\
-    # create some data
-    x = np.random.randn(100)
-    y = np.random.randn(100)
-
-    # create scatter plot with x, y
-    """
-    print(pipe(txt, num_return_sequences=1)[0]["generated_text"])
-
-    txt = """\
-    # create some data
-    x = np.random.randn(100)
-    y = np.random.randn(100)
-
-    # create dataframe from x and y
-    """
-    print(pipe(txt, num_return_sequences=1)[0]["generated_text"])
-
-    txt = """\
-    # dataframe with profession, income and name
-    df = pd.DataFrame({'profession': x, 'income':y, 'name': z})
-
-    # calculate the mean income per profession
-    """
-    print(pipe(txt, num_return_sequences=1)[0]["generated_text"])
-
-    txt = """
-    # import random forest regressor from scikit-learn
-    from sklearn.ensemble import RandomForestRegressor
-
-    # fit random forest model with 300 estimators on X, y:
-    """
-    print(pipe(txt, num_return_sequences=1)[0]["generated_text"])
-
+    
+# ====================================================
+# Custom Training ------------------------------------
 
 def get_grouped_params(model, no_decay=["bias", "LayerNorm.weight"]):
     params_with_wd, params_without_wd = [], []
