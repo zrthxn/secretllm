@@ -84,6 +84,7 @@ def stories(
     
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.save_pretrained(f"{output_directory}/stories-gpt2/tokenizer")
     
     train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
