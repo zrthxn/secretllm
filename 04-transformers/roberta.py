@@ -12,6 +12,7 @@ from transformers.data.data_collator import DataCollatorForLanguageModeling
 parser = ArgumentParser()
 parser.add_argument("--output_directory", type=str)
 parser.add_argument("--language", type=str)
+parser.add_argument("--context_length", type=int, default=128)
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size", type=int, default=64)
 parser.add_argument("--cache_dir", type=str, default=".")
@@ -40,13 +41,13 @@ tokenizer.train_from_iterator(
         "<mask>",
     ])
 
-tokenizer.enable_truncation(max_length=512)
+tokenizer.enable_truncation(max_length=args.context_length)
 tokenizer._tokenizer.post_processor = BertProcessing(
     ("</s>", tokenizer.token_to_id("</s>")),
     ("<s>", tokenizer.token_to_id("<s>")))
 tokenizer.save_model(f"{DIRECTORY}/{LANG}-roberta/tokenizer")
 
-tokenizer = RobertaTokenizerFast.from_pretrained(f"{DIRECTORY}/{LANG}-roberta/tokenizer", max_len=512)
+tokenizer = RobertaTokenizerFast.from_pretrained(f"{DIRECTORY}/{LANG}-roberta/tokenizer", max_len=args.context_length)
 
 model = RobertaForCausalLM(
     RobertaConfig(
@@ -59,7 +60,7 @@ model = RobertaForCausalLM(
     ))
 
 
-train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=512)["input_ids"]
+train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=args.context_length)["input_ids"]
 data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
 training_args = TrainingArguments(
