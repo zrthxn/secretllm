@@ -73,6 +73,7 @@ def wikipedia(
 
 @command
 def stories(
+        config: str,
         output_directory: str,
         epochs: int = 5,
         batch_size: int = 32,
@@ -91,7 +92,7 @@ def stories(
 
     model = GPT2LMHeadModel(
         AutoConfig.from_pretrained(
-            "gpt2",
+            config,
             vocab_size=len(tokenizer),
             n_ctx=context_length,
             bos_token_id=tokenizer.bos_token_id,
