@@ -21,6 +21,7 @@ from transformers import pipeline
 @command
 def wikipedia(
         language: str,
+        config: str,
         output_directory: str,
         epochs: int = 5,
         batch_size: int = 32,
@@ -32,13 +33,14 @@ def wikipedia(
     
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.save_pretrained(f"{output_directory}/{language}-gpt2/tokenizer")
     
     train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
     model = GPT2LMHeadModel(
         AutoConfig.from_pretrained(
-            "gpt2",
+            config,
             vocab_size=len(tokenizer),
             n_ctx=context_length,
             bos_token_id=tokenizer.bos_token_id,
