@@ -1,5 +1,6 @@
 from upycli import command
 from tqdm import tqdm
+from pathlib import Path
 from collections import defaultdict
 from datasets import load_dataset, Dataset, DatasetDict
 from huggingface_hub import notebook_login, Repository, get_full_repo_name
@@ -127,12 +128,14 @@ def stories(
 
 
 @command
-def prompt(pretrained_model, device: torch.device = torch.device("cuda")):
-    pipe = pipeline("text-generation", model=pretrained_model, device=device)
+def prompt(pretrained_model: Path, max_new_tokens: int = 250, device: torch.device = torch.device("cuda")):
+    model = GPT2LMHeadModel.from_pretrained(pretrained_model)
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model / "tokenizer")
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=device)
     
     while True:
         prompt = input(">>> Prompt: ")
-        print(pipe(prompt, num_return_sequences=1)[0]["generated_text"], "\n")
+        print(pipe(prompt, max_new_tokens=max_new_tokens)[0]["generated_text"], "\n")
     
 
     
