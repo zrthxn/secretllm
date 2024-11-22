@@ -1,3 +1,4 @@
+import os
 from sys import argv
 from argparse import ArgumentParser
 from datasets import load_dataset
@@ -20,6 +21,8 @@ args, _ = parser.parse_known_args(argv[1:])
 
 DIRECTORY = args.output_directory
 LANG = args.language
+
+os.makedirs(f"{DIRECTORY}/{LANG}-roberta/tokenizer", exist_ok=True)
 
 dataset = load_dataset("wikimedia/wikipedia", f"20231101.{LANG}", cache_dir=args.cache_dir)
 dataset = [ data["text"] for data in dataset["train"] ]
