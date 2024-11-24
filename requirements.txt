@@ -4,3 +4,4 @@ tokenizers
 transformers[torch]
 transformers[sentencepiece]
 matplotlib
+upycli

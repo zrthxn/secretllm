@@ -4,4 +4,4 @@ data/
 .DS_Store
 .ipynb_checkpoints/
 chromedriver-*
-.gitignore
+.checkpoints/
