@@ -24,7 +24,7 @@ def wikipedia(
     dataset = load_dataset("wikimedia/wikipedia", f"20231101.{language}", cache_dir=cache_dir)
     dataset = [ data["text"] for data in dataset["train"] ]
     
-    os.makedirs(f"{output_directory}/{language}-gpt2/tokenizer")
+    os.makedirs(f"{output_directory}/{language}-gpt2/tokenizer", exist_ok=True)
     
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
@@ -85,7 +85,7 @@ def stories(
     dataset = load_dataset("roneneldan/TinyStories", cache_dir=cache_dir)
     dataset = [ data["text"] for data in dataset["train"] ]
     
-    os.makedirs(f"{output_directory}/{name}/tokenizer")
+    os.makedirs(f"{output_directory}/{name}/tokenizer", exist_ok=True)
     
     tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
