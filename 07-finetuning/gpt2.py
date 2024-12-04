@@ -18,7 +18,8 @@ def wikipedia(
         epochs: int = 5,
         batch_size: int = 32,
         cache_dir: str = ".",
-        context_length: int = 128):
+        context_length: int = 128,
+        resume_from: str = None):
     
     dataset = load_dataset("wikimedia/wikipedia", f"20231101.{language}", cache_dir=cache_dir)
     dataset = [ data["text"] for data in dataset["train"] ]
@@ -54,6 +55,7 @@ def wikipedia(
         learning_rate=5e-4,
         save_steps=5_000,
         fp16=True,
+        resume_from_checkpoint=resume_from,
     )
 
     trainer = Trainer(
@@ -75,7 +77,8 @@ def stories(
         epochs: int = 5,
         batch_size: int = 32,
         cache_dir: str = ".",
-        context_length: int = 128):
+        context_length: int = 128,
+        resume_from: str = None):
     
     name = "stories-gpt2-large" if config == "gpt2-large" else "stories-gpt2"
     
@@ -113,6 +116,7 @@ def stories(
         learning_rate=5e-4,
         save_steps=5_000,
         fp16=True,
+        resume_from_checkpoint=resume_from,
     )
 
     trainer = Trainer(
