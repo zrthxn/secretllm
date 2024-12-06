@@ -22,7 +22,7 @@ def stories(
         resume_from: Path = None):
     
     name = "stories-gpt2-large" if config == "gpt2-large" else "stories-gpt2"
-    (output_directory / name / "tokenizer").mkdir(exist_ok=True)
+    (output_directory / name / "tokenizer").mkdir(parents=True, exist_ok=True)
     
     dataset = load_dataset("roneneldan/TinyStories", cache_dir=cache_dir)
     dataset = [ data["text"] for data in dataset["train"] ]
