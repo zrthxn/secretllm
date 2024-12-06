@@ -11,99 +11,37 @@ from transformers import pipeline
 
 
 @command
-def wikipedia(
-        language: str,
-        config: str,
-        output_directory: str,
-        epochs: int = 5,
-        batch_size: int = 32,
-        cache_dir: str = ".",
-        context_length: int = 128):
-    
-    dataset = load_dataset("wikimedia/wikipedia", f"20231101.{language}", cache_dir=cache_dir)
-    dataset = [ data["text"] for data in dataset["train"] ]
-    
-    os.makedirs(f"{output_directory}/{language}-gpt2/tokenizer")
-    
-    tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.save_pretrained(f"{output_directory}/{language}-gpt2/tokenizer")
-    
-    train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
-    data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
-
-    model = GPT2LMHeadModel(
-        AutoConfig.from_pretrained(
-            config,
-            vocab_size=len(tokenizer),
-            n_ctx=context_length,
-            bos_token_id=tokenizer.bos_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-            cache_dir=cache_dir
-        ))
-
-    args = TrainingArguments(
-        output_dir=f"{output_directory}/{language}-gpt2",
-        per_device_train_batch_size=batch_size,
-        num_train_epochs=epochs,
-        gradient_accumulation_steps=8,
-        logging_steps=5_000,
-        weight_decay=0.1,
-        warmup_steps=1_000,
-        lr_scheduler_type="cosine",
-        learning_rate=5e-4,
-        save_steps=5_000,
-        fp16=True,
-    )
-
-    trainer = Trainer(
-        args=args,
-        model=model,
-        tokenizer=tokenizer,
-        data_collator=data_collator,
-        train_dataset=train_dataset)
-
-    print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
-    trainer.train()
-    trainer.save_model(f"{output_directory}/{language}-gpt2")
-
-
-@command
-def stories(
-        config: Path,
+def instruct(
+        pretrained_model_name_or_path: Path,
         output_directory: Path,
-        learning_rate: float = 5e-4,
+        learning_rate: float = 5e-5,
         epochs: int = 5,
         batch_size: int = 32,
-        cache_dir: Path = ".",
         context_length: int = 128,
-        resume_from: Path = None):
+        cache_dir: Path = "."):
+        
+    output_directory.mkdir(exist_ok=True)
+
+    dataset = load_dataset("Dahoas/synthetic-instruct-gptj-pairwise", cache_dir=cache_dir)
+    #Instruction Fine-Tuning
+    #dataset = [
+    #    f"{data['prompt']}\n\n{data['chosen']}"
+    #    for data in dataset["train"] ]
     
-    name = "stories-gpt2-large" if config == "gpt2-large" else "stories-gpt2"
-    (output_directory / name / "tokenizer").mkdir(parents=True, exist_ok=True)
+    #Role-Based Fine-Tuning
+    dataset = [
+        f"USER: {data['prompt']}\nSYSTEM: {data['chosen']}"
+        for data in dataset["train"]]
+
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path / "tokenizer")
+    model = GPT2LMHeadModel.from_pretrained(pretrained_model_name_or_path)
     
-    dataset = load_dataset("roneneldan/TinyStories", cache_dir=cache_dir)
-    dataset = [ data["text"] for data in dataset["train"] ]
-    
-    tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir=cache_dir)
     tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.save_pretrained(f"{output_directory}/{name}/tokenizer")
-    
     train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
-    model = GPT2LMHeadModel(
-        AutoConfig.from_pretrained(
-            config,
-            vocab_size=len(tokenizer),
-            n_ctx=context_length,
-            bos_token_id=tokenizer.bos_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-            cache_dir=cache_dir
-        ))
-
     args = TrainingArguments(
-        output_dir=f"{output_directory}/{name}",
+        output_dir=output_directory,
         per_device_train_batch_size=batch_size,
         num_train_epochs=epochs,
         gradient_accumulation_steps=8,
@@ -114,7 +52,6 @@ def stories(
         learning_rate=learning_rate,
         save_steps=5_000,
         fp16=True,
-        resume_from_checkpoint=resume_from.absolute(),
     )
 
     trainer = Trainer(
@@ -126,7 +63,68 @@ def stories(
 
     print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
     trainer.train()
-    trainer.save_model(f"{output_directory}/{name}")
+    trainer.save_model(output_directory)
+
+
+@command
+def finetune(
+        pretrained_model_name_or_path: Path,
+        output_directory: Path,
+        learning_rate: float = 5e-4,
+        epochs: int = 5,
+        batch_size: int = 32,
+        context_length: int = 128,
+        cache_dir: Path = "."):
+        
+    output_directory.mkdir(exist_ok=True)
+
+    dataset = load_dataset("Hieu-Pham/kaggle_food_recipes", cache_dir=cache_dir)
+    dataset = [ str(data["Instructions"]) for data in dataset["train"] ]
+    print(dataset[0])
+        
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path / "tokenizer")
+    model = GPT2LMHeadModel.from_pretrained(pretrained_model_name_or_path)
+    
+    # # Training setup
+    # if hasattr(model, "gradient_checkpointing_enable"):
+    #     model.gradient_checkpointing_enable()
+    
+    # total_params = sum(p.numel() for p in model.parameters())
+    # trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # trainable_percentage = (trainable_params / total_params) * 100
+    
+    # print("Total parameters:", total_params)
+    # print("Trainable parameters:", trainable_params)
+    # print("Trainable percentage: {:.2f}%".format(trainable_percentage))
+    
+    tokenizer.pad_token = tokenizer.eos_token
+    train_dataset = tokenizer(dataset, add_special_tokens=True, truncation=True, max_length=context_length)["input_ids"]
+    data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
+
+    args = TrainingArguments(
+        output_dir=output_directory,
+        per_device_train_batch_size=batch_size,
+        num_train_epochs=epochs,
+        gradient_accumulation_steps=8,
+        logging_steps=5_000,
+        weight_decay=0.1,
+        warmup_steps=1_000,
+        lr_scheduler_type="cosine",
+        learning_rate=learning_rate,
+        save_steps=5_000,
+        fp16=True,
+    )
+
+    trainer = Trainer(
+        args=args,
+        model=model,
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        train_dataset=train_dataset)
+
+    print(f"GPT-2 size: {model.num_parameters()/1000**2:.1f}M parameters")
+    trainer.train()
+    trainer.save_model(output_directory)
 
 
 @command
