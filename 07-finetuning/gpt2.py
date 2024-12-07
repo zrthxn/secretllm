@@ -83,9 +83,15 @@ def instruct(
     output_directory.mkdir(exist_ok=True)
 
     dataset = load_dataset("Dahoas/synthetic-instruct-gptj-pairwise", cache_dir=cache_dir)
+    #Instruction Fine-Tuning
+    #dataset = [
+    #    f"{data['prompt']}\n\n{data['chosen']}"
+    #    for data in dataset["train"] ]
+    
+    #Role-Based Fine-Tuning
     dataset = [
-        f"{data['prompt']}\n\n{data['chosen']}"
-        for data in dataset["train"] ]
+        f"USER: {data['prompt']}\nSYSTEM: {data['chosen']}"
+        for data in dataset["train"]]
         
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path, cache_dir=cache_dir)
     model = GPT2LMHeadModel.from_pretrained(pretrained_model_name_or_path)
