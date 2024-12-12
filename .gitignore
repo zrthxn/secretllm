@@ -5,3 +5,6 @@ data/
 .ipynb_checkpoints/
 chromedriver-*
 .checkpoints/
+report-template.*
+!report-template.pdf
+!report-template.tex
