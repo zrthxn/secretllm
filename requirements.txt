@@ -5,3 +5,6 @@ transformers[torch]
 transformers[sentencepiece]
 matplotlib
 upycli
+diffusers
+seaborn
+ipykernel
