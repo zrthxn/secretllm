@@ -1,0 +1,45 @@
+Original model size:
+Parameter conv1.weight: dtype=torch.float32, shape=torch.Size([10, 1, 5, 5]), size=1000 bytes
+Parameter conv1.bias: dtype=torch.float32, shape=torch.Size([10]), size=40 bytes
+Parameter conv2.weight: dtype=torch.float32, shape=torch.Size([20, 10, 5, 5]), size=20000 bytes
+Parameter conv2.bias: dtype=torch.float32, shape=torch.Size([20]), size=80 bytes
+Parameter fc1.weight: dtype=torch.float32, shape=torch.Size([50, 320]), size=64000 bytes
+Parameter fc1.bias: dtype=torch.float32, shape=torch.Size([50]), size=200 bytes
+Parameter fc2.weight: dtype=torch.float32, shape=torch.Size([10, 50]), size=2000 bytes
+Parameter fc2.bias: dtype=torch.float32, shape=torch.Size([10]), size=40 bytes
+Total size: 87360 bytes
+
+Quantizing layer conv1 with shape torch.Size([10, 1, 5, 5])
+Layer conv1 quantized size: 290 bytes
+Quantizing layer conv2 with shape torch.Size([20, 10, 5, 5])
+Layer conv2 quantized size: 5080 bytes
+Quantizing layer fc1 with shape torch.Size([50, 320])
+Layer fc1 quantized size: 16200 bytes
+Quantizing layer fc2 with shape torch.Size([10, 50])
+Layer fc2 quantized size: 540 bytes
+
+Quantized model size:
+Total size: 22110 bytes
+Size reduction: 74.69%
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Running test batch with shape torch.Size([1000, 1, 28, 28])
+Accuracy of the model on the test images after quantization: 98 %
+Finished quantization
+
+Final model parameters:
+Parameter conv1.weight: dtype=uint8, shape=torch.Size([10, 1, 5, 5]), size=250 bytes
+Parameter conv1.bias: dtype=torch.float32, shape=torch.Size([10]), size=40 bytes
+Parameter conv2.weight: dtype=uint8, shape=torch.Size([20, 10, 5, 5]), size=5000 bytes
+Parameter conv2.bias: dtype=torch.float32, shape=torch.Size([20]), size=80 bytes
+Parameter fc1.weight: dtype=uint8, shape=torch.Size([50, 320]), size=16000 bytes
+Parameter fc1.bias: dtype=torch.float32, shape=torch.Size([50]), size=200 bytes
+Parameter fc2.weight: dtype=uint8, shape=torch.Size([10, 50]), size=500 bytes
+Parameter fc2.bias: dtype=torch.float32, shape=torch.Size([10]), size=40 bytes
