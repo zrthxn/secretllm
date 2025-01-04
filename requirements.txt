@@ -8,3 +8,4 @@ upycli
 diffusers
 seaborn
 ipykernel
+torchmetrics
