@@ -9,3 +9,4 @@ diffusers
 seaborn
 ipykernel
 torchmetrics
+torchvision
