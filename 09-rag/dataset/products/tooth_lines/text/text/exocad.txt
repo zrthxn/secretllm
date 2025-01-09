@@ -1,0 +1,5 @@
+EXOCAD
+The Candulor tooth lines PhysioSelect TCR and BonSelect TCR are included as digital tooth data in the exocad DentalCAD software.
+
+The tooth data can also be found in the download area on the exocad website.
+Candulor denture tooth libraries with open files supporting Monoblock Try-Ins and various production options including 3D-printed, milled and bridged teeth. Amann Girrbach "for AG" library set available.

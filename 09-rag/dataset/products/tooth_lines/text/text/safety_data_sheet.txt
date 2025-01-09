@@ -1,0 +1,47 @@
+- Product Name: PhysioSelect TCR, BonSelect TCR
+
+- Manufacturer/Supplier: CANDULOR AG, Boulevard Lilienthal 8, CH-8152 Glattpark (Opfikon), SWITZERLAND
+
+- Emergency Telephone Number: +423 / 235 33 13
+
+- Application: Manufacture of dental prosthesis
+
+- Chemical Stability: Stable under normal handling and storage conditions
+
+- Thermal Decomposition: No decomposition if used according to specifications
+
+- Hazardous Reactions: No dangerous reactions known
+
+- Incompatible Materials: None known
+
+- Hazardous Decomposition Products: None under normal conditions of storage and use
+
+- Acute Toxicity: Classification criteria are not met
+
+- Skin Corrosion/Irritation: Classification criteria are not met
+
+- Serious Eye Damage/Irritation: Classification criteria are not met
+
+- Respiratory or Skin Sensitisation: Classification criteria are not met
+
+- Germ Cell Mutagenicity: Classification criteria are not met
+
+- Carcinogenicity: Classification criteria are not met
+
+- Reproductive Toxicity: Classification criteria are not met
+
+- STOT-Single Exposure: Classification criteria are not met
+
+- STOT-Repeated Exposure: Classification criteria are not met
+
+- Aspiration Hazard: Classification criteria are not met
+
+- Aquatic Toxicity: Not hazardous for water
+
+- Waste Treatment Methods: Take to an approved landfill or waste incineration plant
+
+- Transport Classification: Not classified as a dangerous good for transport
+
+- Regulatory Information: The product is a medical device according to Directive 93/42/EEC
+
+- Precautions for Safe Handling: Only adequately trained personnel should handle this product. For use in dentistry only.

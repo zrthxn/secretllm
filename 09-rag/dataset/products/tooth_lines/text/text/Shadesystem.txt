@@ -1,0 +1,6 @@
+Shading available for the following
+
+16 A– D Farben | Shades: A1, A2, A3, A3.5, A4, B1, B2, B3, B4, C1, C2, C3, C4, D2, D3, D4
+
+2 Bleach Farben | Shades:
+BL2, BL4
