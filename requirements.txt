@@ -10,3 +10,4 @@ seaborn
 ipykernel
 torchmetrics
 torchvision
+ipycanvas
