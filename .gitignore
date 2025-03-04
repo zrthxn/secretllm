@@ -8,3 +8,4 @@ chromedriver-*
 report-template.*
 !report-template.pdf
 !report-template.tex
+.streamlit/
