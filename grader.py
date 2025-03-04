@@ -41,9 +41,6 @@ st.markdown(
 <div style="text-align: center; color: gray;">
 Please note this grade is only provided as a preview for your information. 
 <br>
-For Komplexprüfungen, as decided, your current grade will be carried over to the oral exam.
-
-<br><br>
 For grievances, we can provide a more detailed breakdown of your grade.
 <br>
 Please write to syed_alisamar.husain@tu-dresden.de
